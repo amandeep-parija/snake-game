@@ -1,18 +1,40 @@
 const board = document.querySelector('.board');
+const startButton = document.querySelector(".btn-start")
+const modal = document.querySelector(".modal")
+const startGameModal = document.querySelector(".start-game")
+const gameOverModal = document.querySelector(".game-over")
+const restartButton = document.querySelector(".btn-restart")
+
+
+const highScoreElement = document.querySelector("#high-score")
+const scoreElement = document.querySelector("#score")
+const timeElement = document.querySelector("#time")
+
+
+
+
 const blockHeight = 50
 const blockWidth = 50
 
 
+let highScore = 0
+let score = 0
+let time = `00-00`
+
 const cols = Math.floor(board.clientWidth / blockWidth);
 const rows = Math.floor(board.clientHeight / blockHeight);
+let intervalId = null;
+let food = {
+    x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols)
+}
 
 
 const blocks = [];
-const snake = [{
+let snake = [{
     x: 1, y: 3
 }]
 
-let direction = '';
+let direction = 'right';
 
 
 
@@ -28,16 +50,10 @@ for(let row = 0;row<rows; row++){
 
 
 function render(){
-    snake.forEach(segment =>{
-        blocks[`${segment.x}-${segment.y}`].classList.add("fill")
-    })
-}
-
-
-
-setInterval(() =>{
 
     let head = null
+
+    blocks[ `${food.x}-${food.y}`].classList.add("food")
 
     if(direction === "left"){
         head = {x: snake[0].x, y: snake[0].y - 1}
@@ -49,6 +65,37 @@ setInterval(() =>{
         head = {x: snake[0].x - 1, y: snake[0].y}
     }
 
+    if(head.x <0 || head.x >= rows || head.y < 0 || head.y >= cols){
+        alert("Game Over")
+        clearInterval(intervalId)
+
+        modal.style.display = "flex"
+        startGameModal.style.display = "none"
+        gameOverModal.style.display = "flex"
+
+
+        return;
+    }
+
+
+
+    if(head.x === food.x && head.y === food.y){
+        blocks[ `${food.x}-${food.y}`].classList.remove("food")
+        food = {x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols)}
+        blocks[ `${food.x}-${food.y}`].classList.add("food")
+
+        snake.unshift(head)
+
+        score += 10;
+        scoreElement.innerHTML = score;
+
+        if(score>highScore){
+            highScore = score
+            localStorage.setItem("highScore", highScore)
+        }
+
+    }
+
     snake.forEach(segment =>{
         blocks[`${segment.x}-${segment.y}`].classList.remove("fill")
     })
@@ -57,9 +104,39 @@ setInterval(() =>{
     snake.pop();
 
 
-    render()
-}, 400);
 
+    snake.forEach(segment =>{
+        blocks[`${segment.x}-${segment.y}`].classList.add("fill")
+    })
+}
+
+
+
+// intervalId = setInterval(() =>{
+// render()
+// }, 300);
+
+startButton.addEventListener("click", ()=>{
+    modal.style.display = "none"
+    intervalId = setInterval(() =>{render()},300)
+})
+
+restartButton.addEventListener("click", restartGame)
+
+
+
+function restartGame(){
+    blocks[ `${food.x}-${food.y}`].classList.remove("food")
+    snake.forEach(segment =>{
+        blocks[`${segment.x}-${segment.y}`].classList.remove("fill")
+    })
+
+
+    modal.style.display = "none"
+    snake = [{x: 1, y: 3}]
+    food = {x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols)}
+    intervalId = setInterval(() =>{render()},300)
+}
 
 
 
