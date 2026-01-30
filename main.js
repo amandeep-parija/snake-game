@@ -58,6 +58,7 @@ for(let row = 0;row<rows; row++){
 function render(){
 
     let head = null
+    let tale = null
 
     blocks[ `${food.x}-${food.y}`].classList.add("food")
 
@@ -71,9 +72,20 @@ function render(){
         head = {x: snake[0].x - 1, y: snake[0].y}
     }
 
+    if(direction === "left"){
+        tale = {x: snake[0].x, y: snake[0].y - 1}
+    }else if(direction === "right"){
+        tale = {x: snake[0].x, y: snake[0].y + 1}
+    }else if(direction === "down"){
+        tale = {x: snake[0].x - 1, y: snake[0].y}
+    }else if(direction === "up"){
+        tale = {x: snake[0].x - 1, y: snake[0].y}
+    }
+
     if(head.x <0 || head.x >= rows || head.y < 0 || head.y >= cols){
-        alert("Game Over")
-        clearInterval(intervalId)
+        
+            alert("Game Over")
+            clearInterval(intervalId)
 
         modal.style.display = "flex"
         startGameModal.style.display = "none"
@@ -81,6 +93,8 @@ function render(){
 
 
         return;
+    
+    
     }
 
 
@@ -89,8 +103,24 @@ function render(){
         blocks[ `${food.x}-${food.y}`].classList.remove("food")
         food = {x: Math.floor(Math.random() * rows), y: Math.floor(Math.random() * cols)}
         blocks[ `${food.x}-${food.y}`].classList.add("food")
+        
+        snake.unshift(tale)
+        
 
-        snake.unshift(head)
+
+    //     snake.forEach(segment =>{
+    //     blocks[`${segment.x}-${segment.y}`].classList.remove("fill-1")
+    // })
+
+    //      snake.unshift(tale);
+    //      snake.pop();
+
+
+
+    //      snake.forEach(segment =>{
+    //      blocks[`${segment.x}-${segment.y}`].classList.add("fill-1")
+    // })
+        
 
         score += 10;
         scoreElement.innerHTML = score;
@@ -101,7 +131,6 @@ function render(){
         }
 
     }
-
     snake.forEach(segment =>{
         blocks[`${segment.x}-${segment.y}`].classList.remove("fill")
     })

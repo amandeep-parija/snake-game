@@ -99,6 +99,9 @@ section .infos{
 .fill{
     background-color: var(--bg-fill-color);
 }
+.fill-1{
+    background-color: #54a05e;
+}
 .food{
     background-color: var(--bg-food-color);
 }
